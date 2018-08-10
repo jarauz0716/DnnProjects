@@ -1,0 +1,108 @@
+.radinformation {
+    background-image: url("../../../LaboratoryModule/Resources/Images/Info.png") !important;
+}
+
+.raderror {
+    background-image: url("../../../LaboratoryModule/Resources/Images/Error.png") !important;
+}
+
+.requiredError {
+    color: red;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.BottomMargin {
+    margin-bottom: 10px !important;
+}
+
+.rbView::before {
+    font-family: 'TelerikWebUI';
+    content: "\E07F";
+}
+
+.rbIcon {
+    font-size: 16px;
+    color: #333;
+}
+
+    .rbIcon:hover {
+        text-decoration: none !important;
+    }
+
+.PageLayout .t-row {
+    padding: 10px 0;
+}
+
+.BtnIcon {
+    height: auto !important;
+}
+
+    .BtnIcon input {
+        display: inline-block !important;
+    }
+
+.BtnSave::before {
+    font-family: 'TelerikWebUI';
+    content: "\E0BD";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnClear::before {
+    font-family: 'TelerikWebUI';
+    content: "\E0C3";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnExport::before {
+    font-family: 'TelerikWebUI';
+    content: "\E07E";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnProcess::before {
+    font-family: 'TelerikWebUI';
+    content: "\E0A4";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.rgCancelIcon::before {
+    font-family: 'TelerikWebUI' !important;
+    content: "\E036" !important;
+}
+
+.Required::before {
+    content: "*";
+    color: red;
+    margin-right: 2px;
+    font-size: 15px;
+}
+
+.rgEditForm table tr > td {
+    padding: 5px !important;
+}
+
+.rgSelectedRow .rgIcon {
+    color: #fff !important;
+}
+
+.rgMasterTable thead, .rgMasterTable tfoot {
+    background: #eee;
+}
+
+.rgMasterTable .rgCommandRow .rgCommandCell, .rgMasterTable .rgHeader {
+    background: #0A7EE0;
+    font-weight: bold !important;
+}
+
+    .rgMasterTable .rgCommandRow .rgCommandCell button {
+        color: #fff !important;
+    }
+
+        .rgMasterTable .rgCommandRow .rgCommandCell button:hover {
+            color: #333 !important;
+        }

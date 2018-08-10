@@ -1,0 +1,1141 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+IF OBJECT_ID ('dbo.VM_Patients') IS NOT NULL
+	DROP TABLE dbo.VM_Patients
+GO
+
+CREATE TABLE dbo.VM_Patients
+	(
+	Id             INT IDENTITY NOT NULL,
+	PersonalId     VARCHAR (21) NOT NULL,
+	FirstName      VARCHAR (50) NOT NULL,
+	SecondName     VARCHAR (50),
+	LastName       VARCHAR (50) NOT NULL,
+	SecondLastName VARCHAR (50),
+	Gender         CHAR (1) NOT NULL,
+	Birthday       DATETIME NOT NULL,
+	Address        VARCHAR (250),
+	Phone          VARCHAR (10),
+	CellPhone      VARCHAR (10),
+	Whatsapp       VARCHAR (10),
+	Email          VARCHAR (50) NOT NULL,
+	CONSTRAINT PK_VM_Patients PRIMARY KEY (PersonalId)
+	)
+GO
+
+IF OBJECT_ID ('dbo.VM_Laboratory_Details') IS NOT NULL
+	DROP TABLE dbo.VM_Laboratory_Details
+GO
+
+CREATE TABLE dbo.VM_Laboratory_Details
+	(
+	Id           INT IDENTITY NOT NULL,
+	LaboratoryId INT NOT NULL,
+	LabDetail    VARCHAR (50) NOT NULL,
+	LabResult    VARCHAR (50),
+	LabReference VARCHAR (15),
+	LabUnit      VARCHAR (10),
+	Remark       BIT DEFAULT ((0)),
+	CreateDate   DATETIME,
+	CreateUser   INT,
+	UpdateDate   DATETIME,
+	UpdateUser   INT,
+	CONSTRAINT PK_VM_Laboratory_Details PRIMARY KEY (Id)
+	)
+GO
+
+IF OBJECT_ID ('dbo.VM_Laboratories') IS NOT NULL
+	DROP TABLE dbo.VM_Laboratories
+GO
+
+CREATE TABLE dbo.VM_Laboratories
+	(
+	Id          INT IDENTITY NOT NULL,
+	PatientId   INT NOT NULL,
+	DoctorId    INT NOT NULL,
+	LabName     VARCHAR (50) NOT NULL,
+	Observation VARCHAR (250),
+	CreateDate  DATETIME NOT NULL,
+	CreateUser  INT NOT NULL,
+	UpdateDate  DATETIME,
+	UpdateUser  INT,
+	Closed      BIT DEFAULT ((0)),
+	CONSTRAINT PK_VM_Laboratories PRIMARY KEY (Id)
+	)
+GO
+
+IF OBJECT_ID ('dbo.VM_Doctors') IS NOT NULL
+	DROP TABLE dbo.VM_Doctors
+GO
+
+CREATE TABLE dbo.VM_Doctors
+	(
+	Id             INT IDENTITY NOT NULL,
+	PersonalId     VARCHAR (21) NOT NULL,
+	FirstName      VARCHAR (50) NOT NULL,
+	SecondName     VARCHAR (50),
+	LastName       VARCHAR (50) NOT NULL,
+	SecondLastName VARCHAR (50),
+	Gender         CHAR (1) NOT NULL,
+	DrCode         VARCHAR (10) NOT NULL,
+	DrRegistry     VARCHAR (10) NOT NULL,
+	Specialty      VARCHAR (50) NOT NULL,
+	Birthday       DATETIME NOT NULL,
+	Address        VARCHAR (250),
+	Phone          VARCHAR (10),
+	CellPhone      VARCHAR (10),
+	Whatsapp       VARCHAR (10),
+	Email          VARCHAR (50) NOT NULL,
+	CONSTRAINT PK_VM_Doctors PRIMARY KEY (PersonalId)
+	)
+GO
+
+
+
+/******************** STORE PROCEDURES *************************/
+IF OBJECT_ID ('dbo.VM_SP_Set_Patient') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Set_Patient
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Set_Patient]
+	 @Id 				INT
+	,@PersonalId 		VARCHAR (21)
+	,@FirstName 		VARCHAR (50)
+	,@SecondName 		VARCHAR (50)
+	,@LastName 			VARCHAR (50)
+	,@SecondLastName 	VARCHAR (50)
+	,@Gender 			CHAR (1)
+	,@Birthday 			DATETIME
+	,@Address 			VARCHAR (250)
+	,@Phone 			VARCHAR (10)
+	,@CellPhone 		VARCHAR (10)
+	,@Whatsapp 			VARCHAR (10)
+	,@Email 			VARCHAR (50)
+
+AS
+BEGIN
+	
+	IF ISNULL(@Id, 0) = 0
+	BEGIN
+	
+		INSERT INTO VM_Patients (PersonalId, FirstName, SecondName, LastName, SecondLastName, Gender, Birthday, Address, Phone, CellPhone, Whatsapp, Email)
+		VALUES (@PersonalId, @FirstName, @SecondName, @LastName, @SecondLastName, @Gender, @Birthday, @Address, @Phone, @CellPhone, @Whatsapp, @Email)
+	
+	END
+	ELSE
+	BEGIN
+	
+		UPDATE VM_Patients
+		   SET PersonalId = @PersonalId
+			   ,FirstName = @FirstName
+			   ,SecondName = @SecondName
+			   ,LastName = @LastName
+			   ,SecondLastName = @SecondLastName
+			   ,Gender = @Gender
+			   ,Birthday = @Birthday
+			   ,Address = @Address
+			   ,Phone = @Phone
+			   ,CellPhone = @CellPhone
+			   ,Whatsapp = @Whatsapp
+			   ,Email = @Email
+		 WHERE Id = @Id
+	END
+	
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Set_Laboratory_Detail') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Set_Laboratory_Detail
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Set_Laboratory_Detail]
+	@Id          		INT,
+	@LaboratoryId		INT,
+	@LabDetail			VARCHAR (50), 
+	@LabResult			VARCHAR (50), 
+	@LabReference		VARCHAR (15), 
+	@LabUnit			VARCHAR (10),
+	@Remark				BIT,
+	@UserId				INT
+AS
+BEGIN
+
+	IF ISNULL(@Id, 0) = 0
+	BEGIN
+	
+		INSERT INTO VM_Laboratory_Details (LaboratoryId, LabDetail, LabResult, LabReference, LabUnit, Remark, CreateDate, CreateUser)
+		VALUES (@LaboratoryId, @LabDetail, @LabResult, @LabReference, @LabUnit, @Remark, GetDate(), @UserId)
+	
+	END
+	ELSE
+	BEGIN
+	
+		UPDATE VM_Laboratory_Details 
+		   SET LabDetail = @LabDetail, 
+		   	   LabResult = @LabResult, 
+		   	   LabReference = @LabReference, 
+		   	   LabUnit = @LabUnit,
+		   	   Remark = @Remark,
+		   	   UpdateDate = GetDate(),
+		   	   UpdateUser = @UserId
+	  	 WHERE Id = @Id
+	
+	END
+
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Set_Laboratory') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Set_Laboratory
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Set_Laboratory]
+	@Id          	INT,
+	@PatientId		INT,
+	@DoctorId		INT,
+	@LabName		VARCHAR (50),
+	@Observation	VARCHAR (250),
+	@UserId			INT
+AS
+BEGIN
+
+	IF ISNULL(@Id, 0) = 0
+	BEGIN
+	
+		INSERT INTO VM_Laboratories (PatientId, DoctorId, LabName, Observation, CreateDate, CreateUser)
+		VALUES (@PatientId, @DoctorId, @LabName, @Observation, GetDate(), @UserId)
+	
+		SELECT @Id = MAX(Id)
+		  FROM VM_Laboratories
+		 WHERE PatientId = @PatientId
+	
+	END
+	ELSE
+	BEGIN
+	
+		UPDATE VM_Laboratories 
+		   SET DoctorId = CASE WHEN ISNULL(@DoctorId, 0) = 0 THEN DoctorId ELSE @DoctorId END,
+		   	   LabName = CASE WHEN ISNULL(@LabName, '') = '' THEN LabName ELSE @LabName END, 
+		   	   Observation = @Observation,
+		   	   UpdateDate = GetDate(),
+		   	   UpdateUser = @UserId
+	  	 WHERE Id = @Id
+	
+	END
+
+	SELECT @Id 'Id'
+
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Set_Doctor') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Set_Doctor
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Set_Doctor]
+	 @Id 				INT
+	,@PersonalId 		VARCHAR (21)
+	,@FirstName 		VARCHAR (50)
+	,@SecondName 		VARCHAR (50)
+	,@LastName 			VARCHAR (50)
+	,@SecondLastName 	VARCHAR (50)
+	,@Gender 			CHAR (1)
+	,@DrCode 			VARCHAR (10)
+	,@DrRegistry 		VARCHAR (10)
+	,@Specialty 		VARCHAR (50)
+	,@Birthday 			DATETIME
+	,@Address 			VARCHAR (250)
+	,@Phone 			VARCHAR (10)
+	,@CellPhone 		VARCHAR (10)
+	,@Whatsapp 			VARCHAR (10)
+	,@Email 			VARCHAR (50)
+AS
+BEGIN
+
+	IF ISNULL(@Id, 0) = 0
+	BEGIN
+	
+		INSERT INTO VM_Doctors (PersonalId, FirstName, SecondName, LastName, SecondLastName, Gender, DrCode, DrRegistry, Specialty, Birthday, Address, Phone, CellPhone, Whatsapp, Email)
+		VALUES (@PersonalId, @FirstName, @SecondName, @LastName, @SecondLastName, @Gender, @DrCode, @DrRegistry, @Specialty, @Birthday, @Address, @Phone, @CellPhone, @Whatsapp, @Email)
+	
+	END
+	ELSE
+	BEGIN
+	
+		UPDATE VM_Doctors
+		   SET PersonalId = @PersonalId
+			   ,FirstName = @FirstName
+			   ,SecondName = @SecondName
+			   ,LastName = @LastName
+			   ,SecondLastName = @SecondLastName
+			   ,Gender = @Gender
+			   ,DrCode = @DrCode
+			   ,DrRegistry = @DrRegistry
+			   ,Specialty = @Specialty
+			   ,Birthday = @Birthday
+			   ,Address = @Address
+			   ,Phone = @Phone
+			   ,CellPhone = @CellPhone
+			   ,Whatsapp = @Whatsapp
+			   ,Email = @Email
+		 WHERE Id = @Id
+	
+	END
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Set_Closed_Laboratory') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Set_Closed_Laboratory
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Set_Closed_Laboratory]
+	@Id          	INT,
+	@UserId			INT
+AS
+BEGIN
+
+	IF (SELECT COUNT(1) FROM VM_Laboratory_Details WHERE LaboratoryId = @Id) = 0
+	BEGIN
+	
+		RAISERROR ('El laboratorio no se puede procesar porque no tiene resultados.', 16, 1)
+		RETURN
+	END
+
+	UPDATE VM_Laboratories 
+	   SET Closed = 1, 
+	   	   UpdateDate = GetDate(),
+	   	   UpdateUser = @UserId
+ 	 WHERE Id = @Id
+
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Get_Patients') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Get_Patients
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Get_Patients]
+	@Id		INT
+AS
+BEGIN
+	
+	SELECT Id, 
+		   PersonalId, 
+		   FirstName, 
+		   LastName, 
+		   ISNULL(SecondName, '') 'SecondName', 
+		   ISNULL(SecondLastName, '') 'SecondLastName', 
+		   (Concat(FirstName, ' ',
+		   		   CASE WHEN ISNULL(SecondName, '') != '' THEN Concat(Upper(substring(SecondName, 1, 1)), '. ') END,
+		   		   LastName, 
+		   		   CASE WHEN ISNULL(SecondLastName, '') != '' THEN Concat(' ', Upper(substring(SecondLastName, 1, 1)), '.') END)) 'DisplayName',
+		   Gender,
+		   CASE WHEN Gender = 'M' THEN 'Masculino' WHEN Gender = 'F' THEN 'Femenino' ELSE 'Otro' END 'Gender_Desc',
+		   Birthday,
+		   CONCAT(CONVERT(VARCHAR(2), (DATEDIFF(MM, Birthday, GetDate())/12)), ',', CONVERT(VARCHAR(2), (DATEDIFF(MM, Birthday, GetDate())%12))) 'Years',
+		   ISNULL(Address, '') 'Address', 
+		   ISNULL(Phone, '') 'Phone',
+		   ISNULL(CellPhone, '') 'CellPhone', 
+		   ISNULL(Whatsapp, '') 'Whatsapp', 
+		   Email
+	  FROM VM_Patients 
+	 WHERE Id = CASE WHEN ISNULL(@Id, 0) = 0 THEN Id ELSE @Id END
+	 ORDER BY LastName ASC, FirstName ASC, PersonalId ASC
+	
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Get_Laboratory_Details') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Get_Laboratory_Details
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Get_Laboratory_Details]
+	@LaboratoryId		INT
+AS
+BEGIN
+	
+	SELECT Id, LaboratoryId, LabDetail, LabResult, LabReference, LabUnit, Remark, CreateDate, CreateUser, UpdateDate, UpdateUser
+	  FROM VM_Laboratory_Details
+	 WHERE LaboratoryId = @LaboratoryId
+	 ORDER BY Id ASC
+	
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Get_Laboratories') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Get_Laboratories
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Get_Laboratories]
+	@PatientId		INT
+AS
+BEGIN
+	
+	SELECT VL.Id, 
+		   VL.PatientId,
+		   (Concat(VP.FirstName, ' ',
+		   		   CASE WHEN ISNULL(VP.SecondName, '') != '' THEN Concat(Upper(substring(VP.SecondName, 1, 1)), '. ') END,
+		   		   VP.LastName, 
+		   		   CASE WHEN ISNULL(VP.SecondLastName, '') != '' THEN Concat(' ', Upper(substring(VP.SecondLastName, 1, 1)), '.') END)) 'Patient', 
+		   VL.DoctorId,
+		   (Concat(VD.FirstName, ' ',
+		   		   CASE WHEN ISNULL(VD.SecondName, '') != '' THEN Concat(Upper(substring(VD.SecondName, 1, 1)), '. ') END,
+		   		   VD.LastName, 
+		   		   CASE WHEN ISNULL(VD.SecondLastName, '') != '' THEN Concat(' ', Upper(substring(VD.SecondLastName, 1, 1)), '.') END)) 'Doctor', 
+		   VL.LabName, 
+		   ISNULL(VL.Observation, '') 'Observation',
+		   VL.CreateDate, 
+		   MU.Username,
+		   CASE WHEN Closed = 0 THEN 'En Proceso' ELSE 'Procesado' END 'Status'
+	  FROM VM_Laboratories VL, VM_Patients VP, VM_Doctors VD, MCO_Users MU
+	 WHERE PatientId = @PatientId
+	   AND VP.Id = VL.PatientId
+	   AND VD.Id = VL.DoctorId
+	   AND MU.UserID = VL.CreateUser
+	 ORDER BY VL.Id DESC
+	
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Get_Doctors') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Get_Doctors
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Get_Doctors]
+	@Id		INT
+AS
+BEGIN
+	
+	SELECT Id, PersonalId, FirstName, LastName, SecondName, SecondLastName, Gender, Birthday, Address, Phone,
+		   CellPhone, Whatsapp, Email, DrCode, DrRegistry, Specialty,
+		   (Concat(VD.FirstName, ' ',
+		   		   CASE WHEN ISNULL(VD.SecondName, '') != '' THEN Concat(Upper(substring(VD.SecondName, 1, 1)), '. ') END,
+		   		   VD.LastName, 
+		   		   CASE WHEN ISNULL(VD.SecondLastName, '') != '' THEN Concat(' ', Upper(substring(VD.SecondLastName, 1, 1)), '.') END, ' (', specialty, ')')) 'DisplayName'
+	  FROM VM_Doctors VD
+	 WHERE Id = CASE WHEN ISNULL(@Id, 0) = 0 THEN Id ELSE @Id END
+	
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Delete_Laboratory_Detail') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Delete_Laboratory_Detail
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Delete_Laboratory_Detail]
+	@Id          		INT
+AS
+BEGIN
+
+	DELETE VM_Laboratory_Details
+	 WHERE Id = @Id
+
+END
+GO
+
+IF OBJECT_ID ('dbo.VM_SP_Delete_Laboratory') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Delete_Laboratory
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Delete_Laboratory]
+	@Id          		INT
+AS
+BEGIN
+
+	DELETE VM_Laboratories
+	 WHERE Id = @Id
+	 
+	DELETE VM_Laboratory_Details
+	 WHERE LaboratoryId = @Id
+
+END
+GO
+
+
+/** Crea Tablas **/
+IF OBJECT_ID ('dbo.DNNCL_LOGIN_LOG') IS NOT NULL
+	DROP TABLE dbo.DNNCL_LOGIN_LOG
+GO
+
+CREATE TABLE dbo.DNNCL_LOGIN_LOG
+	(
+	IP                 VARCHAR (15) NOT NULL,
+	USERNAME           VARCHAR (100) NOT NULL,
+	USER_TYPE          VARCHAR (10) NOT NULL,
+	LAST_LOGIN_ATTEMP  DATETIME NOT NULL,
+	LAST_LOGIN_SUCCESS DATETIME,
+	BAD_LOGON_COUNT    INT NOT NULL,
+	STATUS             VARCHAR (25) NOT NULL,
+	CONSTRAINT PK_DNNCL_LOGIN_LOG PRIMARY KEY (IP, USERNAME)
+	)
+GO
+
+IF OBJECT_ID ('dbo.DNNCL_BANNED_IP') IS NOT NULL
+	DROP TABLE dbo.DNNCL_BANNED_IP
+GO
+
+CREATE TABLE dbo.DNNCL_BANNED_IP
+	(
+	IP          VARCHAR (15) NOT NULL,
+	USERNAME    VARCHAR (100) NOT NULL,
+	DATE_LOCKED DATETIME NOT NULL,
+	DESCRIPTION VARCHAR (250) NOT NULL,
+	CONSTRAINT PK_DNNCL_BANNED_IP PRIMARY KEY (IP)
+	)
+GO
+
+
+IF OBJECT_ID ('dbo.CDM_SCHEDULES_USERS') IS NOT NULL
+	DROP TABLE dbo.CDM_SCHEDULES_USERS
+GO
+
+CREATE TABLE dbo.CDM_SCHEDULES_USERS
+	(
+	USER_ID     INT NOT NULL,
+	SCHEDULE_ID INT NOT NULL,
+	CONSTRAINT PK_CDM_SCHEDULES_USERS PRIMARY KEY (USER_ID)
+	)
+GO
+
+
+IF OBJECT_ID ('dbo.CDM_SCHEDULES_LIMITS') IS NOT NULL
+	DROP TABLE dbo.CDM_SCHEDULES_LIMITS
+GO
+
+CREATE TABLE dbo.CDM_SCHEDULES_LIMITS
+	(
+	SCH_ID     INT NOT NULL,
+	DAY_ID     INT NOT NULL,
+	TIME_START TIME,
+	TIME_END   TIME,
+	CONSTRAINT PK_CDM_SCHEDULES_LIMITS PRIMARY KEY (SCH_ID, DAY_ID)
+	)
+GO
+
+
+IF OBJECT_ID ('dbo.CDM_SCHEDULES_DAYS') IS NOT NULL
+	DROP TABLE dbo.CDM_SCHEDULES_DAYS
+GO
+
+CREATE TABLE dbo.CDM_SCHEDULES_DAYS
+	(
+	ID      INT IDENTITY NOT NULL,
+	DAY     VARCHAR (10),
+	DAY_ENG VARCHAR (10),
+	CONSTRAINT PK_CDM_SCHEDULES_DAYS PRIMARY KEY (ID)
+	)
+GO
+
+
+IF OBJECT_ID ('dbo.CDM_SCHEDULES') IS NOT NULL
+	DROP TABLE dbo.CDM_SCHEDULES
+GO
+
+CREATE TABLE dbo.CDM_SCHEDULES
+	(
+	ID          INT IDENTITY NOT NULL,
+	DESCRIPTION VARCHAR (250),
+	CONSTRAINT PK_CDM_SCHEDULES PRIMARY KEY (ID)
+	)
+GO
+
+
+/**** INSERTA REGISTROS ****/
+INSERT INTO dbo.CDM_SCHEDULES (DESCRIPTION)
+VALUES ('Horario Ilimitado')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES (DESCRIPTION)
+VALUES ('Horario Oficina')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('LUNES', 'MONDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('MARTES', 'TUESDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('MIERCOLES', 'WEDNESDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('JUEVES', 'THURSDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('VIERNES', 'FRIDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('SABADO', 'SATURDAY')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_DAYS (DAY, DAY_ENG)
+VALUES ('DOMINGO', 'SUNDAY')
+GO
+
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 1, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 2, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 3, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 4, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 5, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 6, '00:00:00', '23:59:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (1, 7, '00:00:00', '23:59:00')
+GO
+
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (2, 1, '08:00:00', '17:00:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (2, 2, '08:00:00', '17:00:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (2, 3, '08:00:00', '17:00:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (2, 4, '08:00:00', '17:00:00')
+GO
+
+INSERT INTO dbo.CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+VALUES (2, 5, '08:00:00', '17:00:00')
+GO
+
+
+
+/**** CREACION DE PROCEDIMIENTOS ****/
+
+IF OBJECT_ID ('dbo.DNNCL_SET_LOGIN_LOG') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_SET_LOGIN_LOG
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_SET_LOGIN_LOG]
+	@IP				VARCHAR(15),
+	@USERNAME		VARCHAR(100),
+	@STATUS			VARCHAR(25)
+AS
+BEGIN
+
+	DECLARE @L_USERTYPE	VARCHAR(10)
+
+	IF NOT EXISTS (SELECT 1 FROM {objectQualifier}Users WHERE LOWER(Username) = LOWER(@USERNAME))
+		SELECT @L_USERTYPE = 'UNKNOW'
+	ELSE
+		SELECT @L_USERTYPE = 'DNN_USER'
+
+	IF EXISTS (SELECT 1 FROM DNNCL_LOGIN_LOG WHERE IP = @IP AND LOWER(USERNAME) = LOWER(@USERNAME))
+	BEGIN
+		
+		IF @STATUS = 'LOGIN_SUPERUSER' OR @STATUS = 'LOGIN_SUCCESS'
+		BEGIN
+		
+			UPDATE DNNCL_LOGIN_LOG 
+			   SET LAST_LOGIN_SUCCESS = Getdate(),
+			   	   STATUS = @STATUS,
+			   	   BAD_LOGON_COUNT = 0
+			 WHERE IP = @IP 
+			   AND LOWER(USERNAME) = LOWER(@USERNAME)
+			   
+			UPDATE DNNCL_LOGIN_LOG 
+			   SET BAD_LOGON_COUNT = 0
+			 WHERE IP = @IP 
+			   AND USER_TYPE = 'UNKNOW'			   
+		   
+		END
+		ELSE
+		BEGIN
+		
+			UPDATE DNNCL_LOGIN_LOG 
+			   SET STATUS = @STATUS,
+			   	   BAD_LOGON_COUNT = BAD_LOGON_COUNT + 1,
+			   	   LAST_LOGIN_ATTEMP = Getdate()
+			 WHERE IP = @IP 
+			   AND LOWER(USERNAME) = LOWER(@USERNAME)
+			   
+		END
+		
+		   
+	END
+	ELSE
+	BEGIN
+		
+		INSERT INTO DNNCL_LOGIN_LOG (IP, USERNAME, USER_TYPE, LAST_LOGIN_SUCCESS, LAST_LOGIN_ATTEMP, BAD_LOGON_COUNT, STATUS)
+		VALUES (@IP, @USERNAME, @L_USERTYPE, NULL, Getdate(), 0, @STATUS)
+		 
+	END
+	
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.DNNCL_SET_BANNED_IP') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_SET_BANNED_IP
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_SET_BANNED_IP]
+	@IP				VARCHAR(15),
+	@USERNAME		VARCHAR(100),
+	@DESCRIPTION	VARCHAR(250)
+AS
+BEGIN
+
+	IF EXISTS (SELECT 1 FROM DNNCL_BANNED_IP WHERE IP = @IP)
+		RAISERROR ('La dirección IP ya se encuntra registrada.', 16, -1); 
+	ELSE
+		INSERT INTO DNNCL_BANNED_IP (IP, DATE_LOCKED, USERNAME, DESCRIPTION)
+		VALUES (@IP, GetDate(), @USERNAME, @DESCRIPTION)
+
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.DNNCL_GET_BANNED_IP') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_GET_BANNED_IP
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_GET_BANNED_IP]
+AS
+BEGIN
+
+	SELECT IP, USERNAME, DATE_LOCKED, DESCRIPTION
+	 FROM DNNCL_BANNED_IP
+
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.DNNCL_GET_BADLOGON_COUNT') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_GET_BADLOGON_COUNT
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_GET_BADLOGON_COUNT]
+	@USERNAME	VARCHAR(100),
+	@IP			VARCHAR(15)
+AS
+BEGIN
+	
+	DECLARE @L_BADLOGONCOUNT	INT
+	
+	IF ISNULL(@USERNAME, 'UNKNOW') = 'UNKNOW'
+	BEGIN
+		
+		SELECT @L_BADLOGONCOUNT = MAX(BAD_LOGON_COUNT)
+		  FROM DNNCL_LOGIN_LOG
+		 WHERE USER_TYPE = @USERNAME
+		   AND IP = @IP
+	
+	END
+	ELSE IF EXISTS (SELECT 1 FROM DNNCL_LOGIN_LOG WHERE LOWER(USERNAME) = LOWER(@USERNAME))
+	BEGIN
+
+		SELECT @L_BADLOGONCOUNT = MAX(BAD_LOGON_COUNT)
+		  FROM DNNCL_LOGIN_LOG
+		 WHERE LOWER(USERNAME) = LOWER(@USERNAME)
+		   
+	END
+		
+	SELECT ISNULL(@L_BADLOGONCOUNT, 0) 'BADLOGON_COUNT' 
+		 
+	
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.DNNCL_DELETE_BANNED_IP') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_DELETE_BANNED_IP
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_DELETE_BANNED_IP]
+	@IP				VARCHAR(15)
+AS
+BEGIN
+
+	DELETE DNNCL_BANNED_IP
+	 WHERE IP = @IP
+
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.DNNCL_CHECK_BANNED_IP') IS NOT NULL
+	DROP PROCEDURE dbo.DNNCL_CHECK_BANNED_IP
+GO
+
+CREATE PROCEDURE dbo.[DNNCL_CHECK_BANNED_IP]
+	@IP	VARCHAR(15)
+AS
+BEGIN
+
+	IF EXISTS (SELECT 1 FROM DNNCL_BANNED_IP WHERE LOWER(IP) = LOWER(@IP))
+	BEGIN
+
+		SELECT 1 'BANNED' 
+		   
+	END
+	ELSE
+	BEGIN
+		
+		SELECT 0 'BANNED' 
+		 
+	END
+	
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_SET_SCHEDULE_USER') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_SET_SCHEDULE_USER
+GO
+
+CREATE PROCEDURE dbo.[CDM_SET_SCHEDULE_USER]
+	@USER_ID		INT,
+	@SCHEDULE_ID    INT
+AS
+BEGIN
+	IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_USERS WHERE USER_ID = @USER_ID)
+	BEGIN
+		
+		UPDATE CDM_SCHEDULES_USERS
+		   SET SCHEDULE_ID = @SCHEDULE_ID
+		 WHERE USER_ID = @USER_ID
+		
+	END
+	ELSE
+	BEGIN
+	
+		INSERT 
+		  INTO CDM_SCHEDULES_USERS (USER_ID, SCHEDULE_ID)
+		VALUES (@USER_ID, @SCHEDULE_ID)
+		
+	END
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_SET_SCHEDULE_LIMIT') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_SET_SCHEDULE_LIMIT
+GO
+
+CREATE PROCEDURE dbo.[CDM_SET_SCHEDULE_LIMIT]
+	@SCHEDULE_ID    INT,
+	@DAY_ID			INT,
+	@TIME_START		TIME,
+	@TIME_END		TIME
+AS
+BEGIN
+	IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_LIMITS WHERE SCH_ID = @SCHEDULE_ID AND DAY_ID = @DAY_ID)
+	BEGIN
+		
+		UPDATE CDM_SCHEDULES_LIMITS
+		   SET TIME_START = @TIME_START,
+		       TIME_END = @TIME_END
+		 WHERE SCH_ID = @SCHEDULE_ID
+		   AND DAY_ID = @DAY_ID
+	END
+	ELSE
+	BEGIN
+	
+		INSERT 
+		  INTO CDM_SCHEDULES_LIMITS (SCH_ID, DAY_ID, TIME_START, TIME_END)
+		VALUES (@SCHEDULE_ID, @DAY_ID, @TIME_START, @TIME_END)
+		
+	END
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_SET_SCHEDULE') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_SET_SCHEDULE
+GO
+
+CREATE PROCEDURE dbo.[CDM_SET_SCHEDULE]
+	@ID         	INT,
+	@DESCRIPTION	VARCHAR(250)
+AS
+BEGIN
+	IF ISNULL(@ID, 0) = 0
+	BEGIN
+		
+		INSERT 
+		  INTO CDM_SCHEDULES (DESCRIPTION)
+		VALUES (@DESCRIPTION)
+		
+		SELECT MAX(ID)
+		  FROM CDM_SCHEDULES
+		
+	END
+	ELSE
+	BEGIN
+	
+		UPDATE CDM_SCHEDULES
+		   SET DESCRIPTION = @DESCRIPTION
+		 WHERE ID = @ID
+		 
+		 SELECT @ID
+	END
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_GET_SCHEDULES_DAYS') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_GET_SCHEDULES_DAYS
+GO
+
+CREATE PROCEDURE dbo.[CDM_GET_SCHEDULES_DAYS]
+AS
+BEGIN
+		
+	SELECT ID, DAY, DAY_ENG
+	  FROM CDM_SCHEDULES_DAYS
+
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_GET_SCHEDULES') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_GET_SCHEDULES
+GO
+
+CREATE PROCEDURE dbo.[CDM_GET_SCHEDULES]
+	@SCHEDULE_ID	INT
+AS
+BEGIN
+	
+	IF ISNULL(@SCHEDULE_ID, 0) = 0
+	BEGIN
+		
+		SELECT ID, DESCRIPTION
+		  FROM CDM_SCHEDULES
+		
+	END
+	ELSE
+	BEGIN	
+	
+		SELECT SL.SCH_ID,
+			   SL.DAY_ID,
+			   DY.DAY,
+			   --CONVERT(varchar(5), SL.TIME_START,114) 'TIME_START',
+			   --CONVERT(VARCHAR(5), SL.TIME_END,114) 'TIME_END'
+			   CONVERT(DATETIME, SL.TIME_START) 'TIME_START',
+			   CONVERT(DATETIME, SL.TIME_END) 'TIME_END'
+		  FROM CDM_SCHEDULES_DAYS DY, 
+		  	   CDM_SCHEDULES_LIMITS SL
+		 WHERE SL.DAY_ID = DY.ID
+		   AND SL.SCH_ID = @SCHEDULE_ID
+		 ORDER BY SL.SCH_ID ASC, SL.DAY_ID ASC
+		
+	END
+	
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_GET_SCHEDULE_USER') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_GET_SCHEDULE_USER
+GO
+
+CREATE PROCEDURE dbo.[CDM_GET_SCHEDULE_USER]
+	@USER_ID		INT
+AS
+BEGIN
+	
+	IF ISNULL(@USER_ID, 0) = 0
+	BEGIN
+
+		SELECT SU.USER_ID, SU.SCHEDULE_ID, SC.DESCRIPTION
+		  FROM CDM_SCHEDULES_USERS SU, CDM_SCHEDULES SC
+		 WHERE SC.ID = SU.SCHEDULE_ID
+		
+	END
+	ELSE
+	BEGIN
+		IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_USERS WHERE USER_ID = @USER_ID)
+		BEGIN
+			
+			SELECT SC.ID, SC.DESCRIPTION
+			  FROM CDM_SCHEDULES_USERS SU, CDM_SCHEDULES SC
+			 WHERE USER_ID = @USER_ID
+			   AND SC.ID = SU.SCHEDULE_ID
+			
+		END
+		ELSE
+		BEGIN
+		
+			RAISERROR
+		    (N'El usuario no tiene horario asignado.',
+		    16, -- Severity.
+		    -1 -- State.
+		    ); 
+			
+		END
+	END
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_DELETE_SCHEDULE_LIMIT') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_DELETE_SCHEDULE_LIMIT
+GO
+
+CREATE PROCEDURE dbo.[CDM_DELETE_SCHEDULE_LIMIT]
+	@SCHEDULE_ID    INT,
+	@DAY_ID			INT
+AS
+BEGIN
+
+	IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_LIMITS WHERE SCH_ID = @SCHEDULE_ID AND DAY_ID = @DAY_ID)
+	BEGIN
+		
+		DELETE CDM_SCHEDULES_LIMITS
+		 WHERE SCH_ID = @SCHEDULE_ID
+		   AND DAY_ID = @DAY_ID
+	END
+
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_DELETE_SCHEDULE') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_DELETE_SCHEDULE
+GO
+
+CREATE PROCEDURE dbo.[CDM_DELETE_SCHEDULE]
+	@ID	 INT
+AS
+BEGIN
+	
+	IF NOT EXISTS (SELECT 1 FROM CDM_SCHEDULES_USERS WHERE SCHEDULE_ID = @ID)
+	BEGIN
+	
+		IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_LIMITS WHERE SCH_ID = @ID)
+			DELETE CDM_SCHEDULES_LIMITS 
+			 WHERE SCH_ID = @ID
+			
+		DELETE CDM_SCHEDULES
+		 WHERE ID = @ID
+	END
+	ELSE
+	BEGIN
+		RAISERROR
+	    (N'El horario no se puede eliminar porque esta asignado a ciertos usuarios.',
+	    16, -- Severity.
+	    -1 -- State.
+	    ); 
+	
+	END
+		
+	
+END
+GO
+
+
+
+IF OBJECT_ID ('dbo.CDM_CHECK_SCHEDULE') IS NOT NULL
+	DROP PROCEDURE dbo.CDM_CHECK_SCHEDULE
+GO
+
+CREATE PROCEDURE dbo.[CDM_CHECK_SCHEDULE]
+	@USER_ID		INT,
+	@DAY_WEEK		VARCHAR(10),
+	@CURRENT_TIME	TIME
+AS
+BEGIN
+	
+	DECLARE @L_START_TIME 	TIME
+	DECLARE @L_END_TIME		TIME
+	DECLARE @L_RESULT		INT
+		
+	IF EXISTS (SELECT 1 FROM CDM_SCHEDULES_USERS WHERE USER_ID = @USER_ID)
+	BEGIN
+
+		SELECT @L_RESULT = 1 
+		  FROM CDM_SCHEDULES_USERS SU, CDM_SCHEDULES_LIMITS SL, CDM_SCHEDULES_DAYS SD
+		 WHERE SL.SCH_ID = SU.SCHEDULE_ID
+		   AND SD.ID = SL.DAY_ID
+		   AND SL.TIME_START <= @CURRENT_TIME
+		   AND SL.TIME_END > @CURRENT_TIME
+		   AND (UPPER(SD.DAY) = UPPER(@DAY_WEEK) OR UPPER(SD.DAY_ENG) = UPPER(@DAY_WEEK))
+		   AND SU.USER_ID = @USER_ID
+		
+		
+		IF ISNULL(@L_RESULT, -1) = 1
+		BEGIN
+			SELECT 1
+			RETURN 1
+			
+		END
+		ELSE
+		BEGIN
+			RAISERROR
+		    (N'El usuario se encuentra fuera del horario permitido.',
+		    16, -- Severity.
+		    0 -- State.
+		    ); 
+		
+		END
+	
+	END
+	ELSE
+	BEGIN
+	
+		RAISERROR
+	    (N'El usuario no tiene horario asignado.',
+	    16, -- Severity.
+	    -1 -- State.
+	    ); 
+		
+	END
+	
+END
+GO
+
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/************************************************************/
