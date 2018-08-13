@@ -36,7 +36,7 @@ namespace Jar.Dnn.LaboratoryModule
     /// defined there, as well as properties from DNN such as PortalId, ModuleId, TabId, UserId and many more.
     /// </summary>
     /// -----------------------------------------------------------------------------
-    public partial class Settings : LaboratoryModuleModuleSettingsBase
+    public partial class Settings : ModuleSettingsBase
     {
         #region Base Method Implementations
 

@@ -1,0 +1,408 @@
+﻿.radinformation {
+    background-image: url("../../../LaboratoryModule/Resources/Images/Info.png") !important;
+}
+
+.raderror {
+    background-image: url("../../../LaboratoryModule/Resources/Images/Error.png") !important;
+}
+
+.requiredError {
+    color: red;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.BottomMargin {
+    margin-bottom: 10px!important;
+}
+
+.rbView::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E07F";
+}
+
+.rbIcon {
+    font-size: 20px;
+    color: #333;
+}
+
+.rbIcon:hover
+{
+    text-decoration: none!important;
+}
+
+.PageLayout .t-row {
+    padding: 10px 0;
+}
+
+.BtnIcon{
+    height: auto !important;
+}
+
+.BtnIcon input{
+    display: inline-block !important;
+}
+
+.BtnSave::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E0BD";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnClear::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E0C3";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnExport::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E07E";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.BtnProcess::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E0A4";
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.rgCancelIcon::before {
+    font: 16px/1 "TelerikWebUI"!important;
+    content: "\E036" !important;
+}
+
+.Required::before
+{
+    content: "*";
+    color: red;
+    margin-right: 2px;
+    font-size: 15px;
+}
+
+.rgEditForm table tr > td {
+    padding: 5px !important;
+}
+
+.rgSelectedRow .rgIcon
+{
+    color: #fff!important;   
+}
+
+.rgMasterTable thead, .rgMasterTable tfoot {
+    background: #eee;
+}
+
+.rgMasterTable .rgCommandRow .rgCommandCell, .rgMasterTable .rgHeader {
+    background: #0A7EE0;
+    font-weight: bold!important;
+}
+
+.rgMasterTable .rgCommandRow .rgCommandCell button {
+    color: #fff !important;
+}
+
+.rgMasterTable .rgCommandRow .rgCommandCell button:hover {
+    color: #333 !important;
+}
+
+
+
+
+
+.RadCalendar {
+    width: auto !important;
+}
+/*.dnnAuthenticationSettings .dnnLabel {
+    width: 45% !important;
+}
+
+.dnnAuthenticationSettings .NormalTextBox {
+    width: 40% !important;
+}*/
+
+
+/*.rgFilterRow input {
+    max-width: 100% !important;
+}
+
+.rgCommandCell, .rgPagerCell {
+    background: #BBBBBB !important;
+}
+
+.rgFilterRow {
+    background: #0075BC !important;
+}*/
+
+/*.RadTabStrip_MetroTouch .rtsLevel1 .rtsLink {
+    border: 1px solid #aaa !important;
+}*/
+
+/*.RadGrid .rgFilterRow > td {
+    padding: 2px 5px !important;
+}
+
+.RadGrid .rgFilter {
+    padding: 1px !important;
+}*/
+
+/*.RadButton, .RadInput, .RadComboBox {
+    border: 1px solid #888 !important;
+}*/
+
+/*.rbToggleCheckboxChecked::after {
+    font: 16px/1 "TelerikWebUI" !important;
+    content: "\E037" !important;
+}*/
+
+/*.RadListBox .rlbGroup li {
+    list-style: none;
+}
+
+.RadListBox .rlbGroup {
+    padding: 10px;
+    border-color: #888;
+}
+
+.RadCheckBox .rbToggleCheckboxChecked {
+    padding: 0 3px 0 3px !important;
+}*/
+
+/*.rbDeleteUsr, .rbEMail,
+.rbNotAuthorized, .rbAuthorized .rbNotLockedOut, .rbLockedOut {
+    font-size: 16px;
+    padding: 2px 5px;
+}*/
+
+.rbEMail::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E099";
+}
+
+.rbLockedOut::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E0FF";
+}
+
+.rbNotLockedOut::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E100";
+}
+
+.rbAuthorized::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E030";
+}
+
+.rbNotAuthorized::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E033";
+}
+
+.rbSetPass::before {
+    font: 16px/1 "TelerikWebUI";
+    content: "\E0B1";
+}
+/*.rgDel:hover, .rgEdit:hover {
+    background: #0075bc !important;
+    color: #fff !important;
+    border-radius: 15px !important;
+    box-shadow: -2px 2px 4px #333;
+}
+
+.rbIcon:hover {
+    background: #0075bc;
+    color: #fff !important;
+    border-radius: 15px;
+    box-shadow: -2px 2px 4px #333;
+    text-decoration: none !important;
+}*/
+
+/*.SuccessIcon::before {
+    font: 16px/1 "TelerikWebUI" !important;
+    content: '\E037';
+    color: #086320;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+.gridSuccess {
+    font: 16px/1 "TelerikWebUI" !important;
+    color: #086320;
+}
+
+.ErrorIcon::before {
+    font: 16px/1 "TelerikWebUI" !important;
+    content: '\E031';
+    color: #ff0000;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+.gridError {
+    font: 16px/1 "TelerikWebUI" !important;
+    color: #ff0000;
+}
+
+.InfoIcon::before {
+    font: 16px/1 "TelerikWebUI" !important;
+    content: '\E0F9';
+    color: #00a4e3;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+
+.gridInfo {
+    font: 16px/1 "TelerikWebUI" !important;
+    color: #00a4e3;
+}
+
+.WarningIcon::before {
+    font: 16px/1 "TelerikWebUI" !important;
+    content: '\E0FA';
+    color: #9ba100;
+    margin-left: 5px;
+    margin-right: 2px;
+}*/
+
+/*.gridWarning {
+    font-family: 'TelerikWebUI' !important;
+    color: #9ba100;
+}*/
+
+/*.rgEditForm {
+    padding: 10px 20px;
+}
+
+    .rgEditForm label {
+        margin: 10px;
+    }*/
+
+.UserDetails {
+    background: #ccc !important;
+    display: inherit;
+}
+
+.dLabel {
+    width: 20%;
+    float: left;
+    text-align: right;
+    font-weight: bold;
+    padding: 5px 22px 5px 0 !important;
+    background: #ccc;
+}
+
+.dDescription {
+    width: 75%;
+    float: right;
+    text-align: left;
+    padding: 5px 15px 5px;
+    background: #aaa;
+}
+
+/*.rgRow {
+    background: #BDD6EE !important;
+}
+
+.rgAltRow {
+    background: #DEEAF6 !important;
+}*/
+
+/*.rwPopupButton.confirmButton {
+    background: #6deca0 !important;
+    border-color: #aaa !important;
+}
+
+    .rwPopupButton.confirmButton:hover {
+        background: #03ff2a !important;
+    }
+
+
+.rwPopupButton.cancelButton {
+    background: #ff7c7c !important;
+    border-color: #aaa !important;
+}
+
+    .rwPopupButton.cancelButton:hover {
+        background: #ff0d0d !important;
+    }
+
+.IP_Grid .RadAjaxPanel, .fieldPassword .RadAjaxPanel {
+    display: inline-block !important;
+}
+
+.MsgError {
+    font-size: 10px;
+    color: Red;
+}
+
+.IP_Grid .RadGrid {
+    display: inline-block;
+}
+
+.btnImport {
+    background: #82d4a8 !important;
+}
+
+    .btnImport:hover {
+        background: #05ce63 !important;
+    }
+
+.gridLayout {
+    max-width: 100%;
+    overflow: auto;
+}
+
+.rcTimePopup {
+    background-position: -11px -4260px !important;
+}
+
+.scheduleButtons .RadAjaxPanel {
+    display: inline-block !important;
+}
+
+.NewSchedule {
+    background: #25a0da !important;
+    color: #fff !important;
+}
+
+    .NewSchedule:hover {
+        background: #0075bc !important;
+    }
+
+.SaveSchedule {
+    background: #1bad27 !important;
+    color: #fff !important;
+}
+
+    .SaveSchedule:hover {
+        background: #25e421 !important;
+        color: #555 !important;
+    }
+
+.CancelSchedule {
+    background: #ef6565 !important;
+    color: #fff !important;
+}
+
+    .CancelSchedule:hover {
+        background: #f30808 !important;
+    }
+
+.dnnLabel_ {
+    float: left;
+    width: 100px;
+    margin-top: 5px;
+}
+
+.GrdSchedules .rgCommandCell, .GrdSchedules .rgPagerCell {
+    background: #25a0da !important;
+}
+
+.GrdSchedules .rgHeader {
+    background: #7dc4e6 !important;
+}*/
