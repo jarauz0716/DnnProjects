@@ -1136,6 +1136,44 @@ END
 GO
 
 
+IF OBJECT_ID ('dbo.VM_SP_Get_Laboratory') IS NOT NULL
+	DROP PROCEDURE dbo.VM_SP_Get_Laboratory
+GO
+
+CREATE PROCEDURE dbo.[VM_SP_Get_Laboratory]
+	@Id		INT
+AS
+BEGIN
+	
+	SELECT VL.Id,
+		   (Concat(VP.FirstName, ' ',
+		   		   CASE WHEN ISNULL(VP.SecondName, '') != '' THEN Concat(Upper(substring(VP.SecondName, 1, 1)), '. ') END,
+		   		   VP.LastName, 
+		   		   CASE WHEN ISNULL(VP.SecondLastName, '') != '' THEN Concat(' ', Upper(substring(VP.SecondLastName, 1, 1)), '.') END)) 'Patient', 
+		   VP.PersonalId,
+		   CONCAT(CONVERT(VARCHAR(2), (DATEDIFF(MM, VP.Birthday, GetDate())/12)), ',', CONVERT(VARCHAR(2), (DATEDIFF(MM, VP.Birthday, GetDate())%12))) 'Years',
+		   (Concat(VD.FirstName, ' ',
+		   		   CASE WHEN ISNULL(VD.SecondName, '') != '' THEN Concat(Upper(substring(VD.SecondName, 1, 1)), '. ') END,
+		   		   VD.LastName, 
+		   		   CASE WHEN ISNULL(VD.SecondLastName, '') != '' THEN Concat(' ', Upper(substring(VD.SecondLastName, 1, 1)), '.') END)) 'Doctor', 
+		   VL.LabName, 
+		   ISNULL(VL.Observation, '') 'Observation',
+		   VL.CreateDate, 
+		   MU.Username,
+		   MU.DisplayName,
+		   CASE WHEN Closed = 0 THEN 'En Proceso' ELSE 'Procesado' END 'Status'
+	  FROM VM_Laboratories VL, VM_Patients VP, VM_Doctors VD, MCO_Users MU
+	 WHERE VL.Id = @Id
+	   AND VP.Id = VL.PatientId
+	   AND VD.Id = VL.DoctorId
+	   AND MU.UserID = VL.CreateUser
+	 ORDER BY VL.Id DESC
+	
+END
+GO
+
+
+
 /************************************************************/
 /*****              SqlDataProvider                     *****/
 /************************************************************/

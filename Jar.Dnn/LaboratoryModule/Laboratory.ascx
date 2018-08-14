@@ -206,6 +206,11 @@
                 <telerik:AjaxUpdatedControl ControlID="GrdUsers_Roles" LoadingPanelID="LoadingPanel" />
             </UpdatedControls>
         </telerik:AjaxSetting>
+        <telerik:AjaxSetting AjaxControlID="BtnExport">
+            <UpdatedControls>
+                <telerik:AjaxUpdatedControl ControlID="BtnExport" LoadingPanelID="LoadingPanel" />
+            </UpdatedControls>
+        </telerik:AjaxSetting>
     </AjaxSettings>
 </telerik:RadAjaxManager>
 
@@ -438,6 +443,7 @@
                                                 <telerik:GridBoundColumn DataField="PatientId" Display="false" ReadOnly="true" />
                                                 <telerik:GridBoundColumn DataField="DoctorId" Display="false" ReadOnly="true" />
                                                 <telerik:GridBoundColumn DataField="Observation" Display="false" ReadOnly="true" />
+                                                <telerik:GridBoundColumn DataField="Patient" Display="false" ReadOnly="true" />
                                                 <telerik:GridBoundColumn DataField="Doctor" HeaderText="Doctor" ReadOnly="true" CurrentFilterFunction="Contains" AutoPostBackOnFilter="true" 
                                                     ShowFilterIcon="false" FilterControlWidth="90%" />
                                                 <telerik:GridDropDownColumn DataField="DoctorId" UniqueName="LstDoctors" HeaderText="Doctor" Visible="false" FilterListOptions="AllowAllFilters">
@@ -481,7 +487,9 @@
                                                     <ColumnValidationSettings EnableRequiredFieldValidation="true" RequiredFieldValidator-ErrorMessage="Este campo es requerido" RequiredFieldValidator-CssClass="requiredError" />
                                                 </telerik:GridBoundColumn>
                                                 <telerik:GridBoundColumn DataField="LabResult" HeaderText="Resultado" CurrentFilterFunction="Contains" AutoPostBackOnFilter="true" 
-                                                    ShowFilterIcon="false" FilterControlWidth="90%" />
+                                                    ShowFilterIcon="false" FilterControlWidth="90%">
+                                                    <ColumnValidationSettings EnableRequiredFieldValidation="true" RequiredFieldValidator-ErrorMessage="Este campo es requerido" RequiredFieldValidator-CssClass="requiredError" />
+                                                </telerik:GridBoundColumn>
                                                 <telerik:GridBoundColumn DataField="LabReference" HeaderText="Valor Referencia" CurrentFilterFunction="Contains" AutoPostBackOnFilter="true" 
                                                     ShowFilterIcon="false" FilterControlWidth="90%" />
                                                 <telerik:GridBoundColumn DataField="LabUnit" HeaderText="Unidad" CurrentFilterFunction="Contains" AutoPostBackOnFilter="true" 
@@ -512,7 +520,7 @@
                                 <telerik:RadButton ID="BtnProcess" runat="server" Text="Procesar Laboratorio" CssClass="BtnIcon BtnProcess" OnClientClicking="OnClientClicking" OnClick="BtnProcess_Click" />
                             </telerik:LayoutColumn>
                             <telerik:LayoutColumn Span="3">
-                                <telerik:RadButton ID="BtnExport" runat="server" Text="Generar PDF" CssClass="BtnIcon BtnExport" />
+                                <telerik:RadButton ID="BtnExport" runat="server" Text="Generar PDF" CssClass="BtnIcon BtnExport" OnClick="BtnExport_Click" />
                             </telerik:LayoutColumn>
                             <telerik:LayoutColumn Span="3">
                                 <telerik:RadButton ID="BtnClearResult" runat="server" Text="Limpiar Resultados" CssClass="BtnIcon BtnClear" OnClick="BtnClearResult_Click" />

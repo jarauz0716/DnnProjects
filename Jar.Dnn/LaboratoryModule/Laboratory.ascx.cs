@@ -397,6 +397,9 @@ namespace Jar.Dnn.LaboratoryModule
                     GrdPatientLabs.Rebind();
                     RowIndex = 0;
                     TxtObservation.Text = string.Empty;
+                    BtnSaveObservation.Enabled = true;
+                    BtnProcess.Enabled = true;
+                    BtnExport.Enabled = false;
                     DisplayAlert("Laboratorio creado correctamente, puede proceder a agregar los detalles del mismo.", "Laboratorio Creado", "Info");
                 }
                 catch (Exception ex)
@@ -515,6 +518,11 @@ namespace Jar.Dnn.LaboratoryModule
             foreach (Telerik.Web.UI.GridDataItem item in GrdPatientLabs.SelectedItems)
                 Status = item["Status"].Text.ToString();
 
+            if (e.Item is Telerik.Web.UI.GridEditFormInsertItem && e.Item.OwnerTableView.IsItemInserted)
+            {
+                GrdLabDetails.MasterTableView.GetItems(Telerik.Web.UI.GridItemType.FilteringItem)[0].Visible = false;
+            }
+
             if (e.Item is Telerik.Web.UI.GridDataItem)
             {
                 Telerik.Web.UI.GridDataItem dataItem = (Telerik.Web.UI.GridDataItem)e.Item;
@@ -593,7 +601,7 @@ namespace Jar.Dnn.LaboratoryModule
 
                     Data.DataProvider.Instance().SetLaboratoryDetail(LabId, LabDetail, LabResult, LabReference, LabUnit, Remark, UserId);
                     GrdLabDetails.Rebind();
-                    DisplayAlert("Resultado agregado correctamente", "Laboratorio Agregado", "Info");
+                    //DisplayAlert("Resultado agregado correctamente", "Laboratorio Agregado", "Info");
                 }
                 catch (Exception ex)
                 {
@@ -650,7 +658,7 @@ namespace Jar.Dnn.LaboratoryModule
                     Data.DataProvider.Instance().SetLaboratoryDetail(0, LabDetail, LabResult, LabReference, LabUnit, Remark, UserId, Id);
                     GrdLabDetails.Rebind();
 
-                    DisplayAlert("Resultado actualizado correctamente", "Resultado Actualizado", "Info");
+                    //DisplayAlert("Resultado actualizado correctamente", "Resultado Actualizado", "Info");
                 }
                 catch (Exception ex)
                 {
@@ -745,6 +753,71 @@ namespace Jar.Dnn.LaboratoryModule
 
                 Data.DataProvider.Instance().SetObservation(LabId, TxtObservation.Text, UserId);
                 DisplayAlert("Observación modificada correctamente.", "Modificar Observación", "Info");
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert(ex);
+            }
+        }
+
+        protected void BtnExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int LabId = 0;
+                string Status = string.Empty;
+                string PatientName = string.Empty;
+                string LabName = string.Empty;
+                System.Data.DataTable dt = new System.Data.DataTable();
+
+                if (GrdPatientLabs.SelectedItems.Count == 0)
+                {
+                    DisplayAlert("Debe seleccionar primero un laboratorio para poder generar.", "Alerta", "Alert");
+                    return;
+                }
+
+                foreach (Telerik.Web.UI.GridDataItem item in GrdPatientLabs.SelectedItems)
+                {
+                    LabId = int.Parse(item["Id"].Text);
+                    Status = item["Status"].Text;
+                    PatientName = item["Patient"].Text;
+                    LabName = item["LabName"].Text;
+                }
+
+                if (Status != "Procesado")
+                {
+                    DisplayAlert("Debe seleccionar un laboratorio procesado para poder generar.", "Alerta", "Alert");
+                    return;
+                }
+
+
+                Telerik.Reporting.Processing.RenderingResult result;
+                Telerik.Reporting.Processing.ReportProcessor reportProcessor = new Telerik.Reporting.Processing.ReportProcessor();
+                Telerik.Reporting.TypeReportSource reportSource = new Telerik.Reporting.TypeReportSource
+                {
+                    TypeName = typeof(LabsLibrary.RptLab).AssemblyQualifiedName
+                };
+                
+                dt = Data.DataProvider.Instance().GetLaboratory(LabId);
+                reportSource.Parameters.Add("XmlLaboratory", APC.Utility.Functions.Util.DataTableToXml(dt));
+
+                dt = Data.DataProvider.Instance().GetLabDetails(LabId);
+                reportSource.Parameters.Add("XmlLaboratoryDetails", APC.Utility.Functions.Util.DataTableToXml(dt));
+
+                result = reportProcessor.RenderReport("PDF", reportSource, null);
+
+                string fileName = string.Format("{0} - {1}.", LabName, PatientName) + result.Extension;
+
+                Response.Clear();
+                Response.ContentType = result.MimeType;
+                Response.Cache.SetCacheability(System.Web.HttpCacheability.Private);
+                Response.Expires = -1;
+                Response.Buffer = true;
+
+                Response.AddHeader("Content-Disposition", string.Format("{0};FileName=\"{1}\"", "attachment", fileName));
+
+                Response.BinaryWrite(result.DocumentBytes);
+                Response.End();
             }
             catch (Exception ex)
             {
@@ -1588,6 +1661,7 @@ namespace Jar.Dnn.LaboratoryModule
         }
 
         #endregion
+
     }
 }
 
